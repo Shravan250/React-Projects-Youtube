@@ -1,10 +1,10 @@
 import React from "react";
-
+import RecipeCalculator from "./components/RecipeCalculator";
+import "./App.css";
 const App = () => {
   return (
-    <div>
-      App
-      <div></div>
+    <div class="main-container">
+      <RecipeCalculator />
     </div>
   );
 };

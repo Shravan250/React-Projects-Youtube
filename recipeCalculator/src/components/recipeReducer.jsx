@@ -1,17 +1,64 @@
-import React from "react";
+import React, { act } from "react";
 
-///initail state
-const initailState = {
+///initial state
+export const initialState = {
   ingredients: [
-    { id: 1, name: "Onion", amount: 2, unit: "cloves" },
-    { id: 2, name: "Garlic", amount: 1, unit: "teaspoon" },
-    { id: 3, name: "Milk", amount: 1, unit: "liters" },
+    { name: "Flour", amount: 2, unit: "cups" },
+    { name: "Sugar", amount: 1, unit: "cups" },
+    { name: "Milk", amount: 1, unit: "liters" },
   ],
   servings: 4,
 };
 
-const recipeReducer = () => {
-  return <div></div>;
+const recipeReducer = (state, action) => {
+  switch (action.type) {
+    case "SCALE_RECIPE":
+      return {
+        ...state,
+        ingredients: state.ingredients.map((ingredient) => ({
+          ...ingredient,
+          amount: ingredient.amount * action.multiplier,
+        })),
+      };
+    case "CONVERT_UNITS":
+      return {
+        ...state,
+        ingredients: state.ingredients.map((ingredient) => ({
+          ...ingredient,
+          unit: action.newUnit,
+          amount: convertUnits(
+            ingredient.amount,
+            ingredient.unit,
+            action.newUnit
+          ),
+        })),
+      };
+    case "UPDATE_SERVINGS":
+      const newServings = action.servings;
+      const scaleFactor = newServings / state.servings;
+      return {
+        ...state,
+        servings: newServings,
+        ingredients: state.ingredients.map((ingredient) => ({
+          ...ingredient,
+          amount: ingredient.amount * scaleFactor,
+        })),
+      };
+    default:
+      return state;
+  }
+};
+
+const convertUnits = (amount, fromUnit, toUnit) => {
+  const conversionRates = {
+    cups: { liters: 0.236588 },
+    liters: { cups: 4.22675 },
+  };
+
+  if (fromUnit === toUnit) return amount;
+
+  const rate = conversionRates[fromUnit][toUnit];
+  return (amount * rate).toFixed(2);
 };
 
 export default recipeReducer;
